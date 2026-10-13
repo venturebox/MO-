@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>mObywatel 2.0</title>
+  
+  <!-- PWA Meta tags -->
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="mObywatel">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-viewport" id="appViewport">
+    
+    <!-- Header -->
+    <header class="app-header">
+      <!-- Polish Eagle Red Badge (Herb Orła Białego) -->
+      <div class="eagle-badge" id="eagleBadgeBtn" title="mObywatel">
+        <img src="./icons/orzel-bialy.svg" alt="Godło Rzeczypospolitej Polskiej" class="eagle-img">
+      </div>
+
+      <!-- Header Action Icons -->
+      <div class="header-actions">
+        <!-- Robot (mAsystent AI) -->
+        <button class="header-icon-btn" id="btnAssistant" title="mAsystent">
+          <svg viewBox="0 0 24 24">
+            <rect x="4" y="8" width="16" height="12" rx="4" />
+            <line x1="12" y1="4" x2="12" y2="8" />
+            <circle cx="12" cy="3" r="1.2" fill="currentColor" />
+            <circle cx="9" cy="13" r="1.4" fill="currentColor" />
+            <circle cx="15" cy="13" r="1.4" fill="currentColor" />
+            <path d="M9.5 16.5C10.2 17.2 11.1 17.5 12 17.5C12.9 17.5 13.8 17.2 14.5 16.5" />
+            <line x1="1" y1="13" x2="4" y2="13" />
+            <line x1="20" y1="13" x2="23" y2="13" />
+          </svg>
+        </button>
+
+        <!-- Mail (Skrzynka / e-Doręczenia) -->
+        <button class="header-icon-btn" id="btnMail" title="Skrzynka">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="14" rx="3" />
+            <path d="M3 7L12 13L21 7" />
+          </svg>
+        </button>
+
+        <!-- Bell (Powiadomienia) with Red Dot Badge -->
+        <button class="header-icon-btn" id="btnNotifications" title="Powiadomienia">
+          <svg viewBox="0 0 24 24">
+            <path d="M18 8A6 6 0 0 0 6 8C6 15 3 17 3 17H21S18 15 18 8" />
+            <path d="M13.73 21A2 2 0 0 1 10.27 21" />
+          </svg>
+          <span class="notification-badge"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Screen Title -->
+    <h1 class="screen-title" id="screenTitle">Dokumenty</h1>
+
+    <!-- Main View (Dokumenty tab) -->
+    <main class="main-content" id="tabContentDokumenty">
+      
+      <!-- Overlapping Cards Deck -->
+      <div class="cards-deck-wrapper" id="cardsDeck">
+        
+        <!-- 1. mPrawo jazdy (Top layer peeking) -->
+        <div class="wallet-card card-driving-license" data-card="driving-license" id="cardDrivingLicense">
+          <div class="card-top">
+            <span class="card-title">mPrawo jazdy</span>
+            <div class="card-emblem-badge">
+              <div class="pl-circle-badge">PL</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. mDowód (Middle layer peeking) -->
+        <div class="wallet-card card-id" data-card="id" id="cardId">
+          <div class="card-top">
+            <span class="card-title">mDowód</span>
+            <div class="card-emblem-badge card-watermark">
+              <img src="./icons/orzel-bialy.svg" alt="Godło Polski" class="card-watermark-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Moje pojazdy (Front active full card) -->
+        <div class="wallet-card card-vehicles" data-card="vehicles" id="cardVehicles">
+          <div class="card-top">
+            <span class="card-title">Moje pojazdy</span>
+            <div class="card-emblem-badge card-watermark">
+              <img src="./icons/orzel-bialy.svg" alt="Godło Polski" class="card-watermark-img">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Zarządzaj link directly below cards -->
+      <div class="manage-row">
+        <button class="btn-manage" id="btnManage">Zarządzaj</button>
+      </div>
+
+      <!-- Floating button on bottom right -->
+      <div class="fab-container">
+        <button class="btn-add-doc" id="btnAddDoc">
+          <svg viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Dodaj dokument</span>
+        </button>
+      </div>
+
+    </main>
+
+    <!-- Usługi tab content (hidden by default) -->
+    <main class="main-content" id="tabContentUslugi" style="display: none; overflow-y: auto;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div class="doc-selection-item" style="flex-direction: column; align-items: flex-start;">
+          <div class="doc-selection-icon" style="background: #1976d2;">📜</div>
+          <div class="doc-selection-name" style="margin-top: 8px;">Historia pojazdu</div>
+          <div class="doc-selection-desc">Sprawdź przebieg i OC</div>
+        </div>
+        <div class="doc-selection-item" style="flex-direction: column; align-items: flex-start;">
+          <div class="doc-selection-icon" style="background: #9c27b0;">🚨</div>
+          <div class="doc-selection-name" style="margin-top: 8px;">Punkty karne</div>
+          <div class="doc-selection-desc">Sprawdź stan punktów</div>
+        </div>
+        <div class="doc-selection-item" style="flex-direction: column; align-items: flex-start;">
+          <div class="doc-selection-icon" style="background: #2e7d32;">🏥</div>
+          <div class="doc-selection-name" style="margin-top: 8px;">Recepty</div>
+          <div class="doc-selection-desc">Twoje e-recepty</div>
+        </div>
+        <div class="doc-selection-item" style="flex-direction: column; align-items: flex-start;">
+          <div class="doc-selection-icon" style="background: #e65100;">🎫</div>
+          <div class="doc-selection-name" style="margin-top: 8px;">Bilety kolejowe</div>
+          <div class="doc-selection-desc">Rozkłady i bilety PKP</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Kod QR tab content (hidden by default) -->
+    <main class="main-content" id="tabContentKodQR" style="display: none; align-items: center; justify-content: center; text-align: center;">
+      <div style="padding: 24px; background: #f8fafc; border-radius: 24px; border: 1px solid #e2e8f0; width: 100%;">
+        <div style="width: 180px; height: 180px; margin: 0 auto 20px auto; border: 2px dashed #0057f7; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" style="width: 80px; height: 80px; stroke: #0057f7; fill: none; stroke-width: 1.5;">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+            <line x1="4" y1="12" x2="20" y2="12" stroke="#ff0055" stroke-width="2" />
+          </svg>
+        </div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #0f172a;">Skaner Kodów QR</div>
+        <div style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Skieruj aparat na kod QR, aby potwierdzić tożsamość lub przekazać dane</div>
+        <button class="btn-add-doc" style="margin: 0 auto;">Uruchom aparat</button>
+      </div>
+    </main>
+
+    <!-- Szukaj tab content -->
+    <main class="main-content" id="tabContentSzukaj" style="display: none;">
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <input type="text" placeholder="Szukaj usług lub dokumentów..." style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 16px; padding: 12px 16px; color: #0f172a; font-size: 14px; outline: none;">
+      </div>
+      <div style="margin-top: 20px; font-size: 13px; color: #64748b;">Często wyszukiwane:</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+        <span style="background: #f1f5f9; color: #0f172a; padding: 6px 14px; border-radius: 20px; font-size: 13px;">Dowód osobisty</span>
+        <span style="background: #f1f5f9; color: #0f172a; padding: 6px 14px; border-radius: 20px; font-size: 13px;">Prawo jazdy</span>
+        <span style="background: #f1f5f9; color: #0f172a; padding: 6px 14px; border-radius: 20px; font-size: 13px;">Zastrzeż PESEL</span>
+      </div>
+    </main>
+
+    <!-- Więcej tab content -->
+    <main class="main-content" id="tabContentWiecej" style="display: none; overflow-y: auto;">
+      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;">
+        <div class="doc-selection-item">
+          <div class="doc-selection-icon" style="background: #37474f;">⚙️</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Ustawienia aplikacji</div>
+            <div class="doc-selection-desc">Biometria, PIN, powiadomienia</div>
+          </div>
+        </div>
+        <div class="doc-selection-item">
+          <div class="doc-selection-icon" style="background: #00838f;">🔒</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Bezpieczeństwo</div>
+            <div class="doc-selection-desc">Zastrzeż PESEL, historia logowań</div>
+          </div>
+        </div>
+        <div class="doc-selection-item">
+          <div class="doc-selection-icon" style="background: #d81b60;">ℹ️</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">O aplikacji</div>
+            <div class="doc-selection-desc">mObywatel 2.0 (wersja PWA)</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (5 Items) -->
+    <nav class="bottom-nav">
+      <!-- 1. Dokumenty -->
+      <button class="nav-item active" data-tab="Dokumenty" id="navDokumenty">
+        <div class="nav-icon-container">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="16" rx="3" />
+            <line x1="7" y1="9" x2="13" y2="9" />
+            <line x1="7" y1="13" x2="11" y2="13" />
+            <circle cx="16.5" cy="13.5" r="1.5" />
+          </svg>
+        </div>
+        <span class="nav-label">Dokumenty</span>
+      </button>
+
+      <!-- 2. Usługi -->
+      <button class="nav-item" data-tab="Uslugi" id="navUslugi">
+        <div class="nav-icon-container">
+          <svg viewBox="0 0 24 24">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+        </div>
+        <span class="nav-label">Usługi</span>
+      </button>
+
+      <!-- 3. Kod QR -->
+      <button class="nav-item" data-tab="KodQR" id="navKodQR">
+        <div class="nav-icon-container">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+            <rect x="7" y="7" width="10" height="10" rx="1.5" />
+          </svg>
+        </div>
+        <span class="nav-label">Kod QR</span>
+      </button>
+
+      <!-- 4. Szukaj -->
+      <button class="nav-item" data-tab="Szukaj" id="navSzukaj">
+        <div class="nav-icon-container">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <span class="nav-label">Szukaj</span>
+      </button>
+
+      <!-- 5. Więcej -->
+      <button class="nav-item" data-tab="Wiecej" id="navWiecej">
+        <div class="nav-icon-container">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="2" />
+            <rect x="14" y="3" width="7" height="7" rx="2" />
+            <rect x="14" y="14" width="7" height="7" rx="2" />
+            <rect x="3" y="14" width="7" height="7" rx="2" />
+          </svg>
+        </div>
+        <span class="nav-label">Więcej</span>
+      </button>
+    </nav>
+
+    <!-- Android Soft Navigation Bar Simulator (matching the phone in screenshot) -->
+    <div class="android-nav-bar">
+      <!-- III Recent apps -->
+      <svg viewBox="0 0 24 24">
+        <line x1="6" y1="4" x2="6" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18" y1="4" x2="18" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <!-- Home button -->
+      <svg id="androidSoftHomeBtn" viewBox="0 0 24 24" style="cursor: pointer;">
+        <rect x="5" y="5" width="14" height="14" rx="4" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+      <!-- Back button -->
+      <svg id="androidSoftBackBtn" viewBox="0 0 24 24" style="cursor: pointer;">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- SCREEN: MOJE POJAZDY (1:1 with user's screenshot) -->
+    <div class="screen-subpage" id="screenVehiclesView">
+      <!-- Subpage Header -->
+      <div class="subpage-header">
+        <button class="subpage-back-btn" id="btnBackFromVehicles" title="Wróć">
+          <svg viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+        <h2 class="subpage-title">Moje pojazdy</h2>
+        <button class="subpage-action-btn" id="btnTrashVehicle" title="Usuń pojazd">
+          <svg viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6V20a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+            <line x1="10" y1="11" x2="10" y2="17" />
+            <line x1="14" y1="11" x2="14" y2="17" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Subpage Scrollable Body -->
+      <div class="subpage-body">
+        <!-- Vehicle Card (MERCEDES-BENZ B 200) -->
+        <div class="vehicle-item-card" id="vehicleItemCard">
+          <!-- Car illustration / silhouette (Mercedes-Benz B 200) -->
+          <div class="vehicle-car-illustration">
+            <img src="./icons/car-avatar.svg" alt="Mercedes-Benz B 200" class="vehicle-avatar-img">
+          </div>
+
+          <!-- Vehicle Info -->
+          <div class="vehicle-item-info">
+            <div class="vehicle-item-name">MERCEDES-BENZ B 200</div>
+            <div class="vehicle-item-plate">EBE7XC8</div>
+
+            <div class="vehicle-status-row">
+              <span class="status-badge-dot status-ok">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12"/></svg>
+              </span>
+              <span class="vehicle-status-text">Polisa OC</span>
+            </div>
+
+            <div class="vehicle-status-row">
+              <span class="status-badge-dot status-err">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+              <span class="vehicle-status-text">Badanie techniczne</span>
+            </div>
+          </div>
+
+          <!-- Chevron Right -->
+          <div class="vehicle-chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Vehicle Card 2 (NISSAN QASHQAI J12 - WZ705EH) -->
+        <div class="vehicle-item-card" id="vehicleItemCardNissan">
+          <!-- Car illustration / silhouette (Nissan Qashqai J12) -->
+          <div class="vehicle-car-illustration">
+            <img src="./icons/car-qashqai.svg" alt="Nissan Qashqai J12" class="vehicle-avatar-img">
+          </div>
+
+          <!-- Vehicle Info -->
+          <div class="vehicle-item-info">
+            <div class="vehicle-item-name">NISSAN QASHQAI J12</div>
+            <div class="vehicle-item-plate">WZ705EH</div>
+
+            <div class="vehicle-status-row">
+              <span class="status-badge-dot status-ok">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12"/></svg>
+              </span>
+              <span class="vehicle-status-text">Polisa OC</span>
+            </div>
+
+            <div class="vehicle-status-row">
+              <span class="status-badge-dot status-ok">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12"/></svg>
+              </span>
+              <span class="vehicle-status-text">Badanie techniczne</span>
+            </div>
+          </div>
+
+          <!-- Chevron Right -->
+          <div class="vehicle-chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Information Box (cyan border alert) -->
+        <div class="vehicle-info-box">
+          <div class="info-box-header">
+            <div class="info-circle-icon">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+            </div>
+            <div class="info-box-title">
+              Aktualne dane zostaną pobrane, gdy użyjesz przycisku Aktualizuj
+            </div>
+          </div>
+
+          <div class="info-box-desc">
+            Niektóre informacje, na przykład o polisie OC, mogą pojawić się w systemie z kilkudniowym, a czasem kilkutygodniowym opóźnieniem.
+          </div>
+
+          <div class="info-box-desc" style="margin-top: 12px;">
+            Jeśli mimo zaktualizowania dane są błędne, możesz to zgłosić.
+          </div>
+
+          <a href="#" class="info-box-link" id="linkReportError">Zgłoś błąd</a>
+        </div>
+
+        <!-- Bottom Update Button (pinned at bottom) -->
+        <div class="vehicle-action-bottom">
+          <button class="btn-update-data" id="btnUpdateVehicleData">
+            Aktualizuj dane
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN: SZCZEGÓŁY POJAZDU (1:1 with user's screenshot) -->
+    <div class="screen-subpage" id="screenVehicleDetailView" style="z-index: 42;">
+      <!-- Subpage Header -->
+      <div class="subpage-header">
+        <button class="subpage-back-btn" id="btnBackFromVehicleDetail" title="Wróć">
+          <svg viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+        <h2 class="subpage-title">Szczegóły pojazdu</h2>
+        <div style="width: 40px;"></div>
+      </div>
+
+      <!-- Subpage Scrollable Body -->
+      <div class="subpage-body">
+        <!-- Live Timestamp -->
+        <div class="vehicle-detail-time" id="vehicleDetailLiveTime">
+          Czas: 07:02:34 13.10.2026
+        </div>
+
+        <!-- Warning Alert Box (visible when inspection expired, e.g. for Mercedes) -->
+        <div class="vehicle-alert-box" id="vehicleAlertBox">
+          <div class="alert-box-header">
+            <div class="alert-triangle-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div class="alert-box-title" id="vehicleAlertTitle">
+              Badanie techniczne straciło ważność
+            </div>
+            <button class="alert-box-close" id="btnCloseAlert" title="Zamknij">
+              <svg viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div class="alert-box-desc" id="vehicleAlertDesc">
+            Pobierz nowe dane badania technicznego pojazdu, jeśli zostało zrobione. Dane mogą pojawić się w systemie z kilkudniowym opóźnieniem.
+          </div>
+          <a href="#" class="alert-box-link" id="linkDownloadData">Pobierz dane</a>
+        </div>
+
+        <!-- Main Vehicle Card -->
+        <div class="vehicle-detail-card">
+          <!-- Top Row: Name & 3D Car Avatar -->
+          <div class="detail-header-row">
+            <div>
+              <div class="detail-vehicle-name" id="detailVehicleName">MERCEDES-BENZ B 200</div>
+              <div class="detail-vehicle-type" id="detailVehicleType">Samochód osobowy</div>
+            </div>
+            <div class="detail-car-avatar">
+              <img src="./icons/car-avatar.svg" alt="Pojazd" id="detailVehicleAvatar" class="detail-avatar-img">
+            </div>
+          </div>
+
+          <!-- Statuses (OC & Badanie techniczne) -->
+          <div class="detail-status-section">
+            <!-- OC -->
+            <div class="detail-status-item">
+              <div class="detail-status-head">
+                <span class="status-badge-dot status-ok" id="detailOcDot">
+                  <svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12" /></svg>
+                </span>
+                <span class="detail-status-label" id="detailOcLabel">Polisa OC</span>
+              </div>
+              <div class="detail-status-validity" id="detailOcValidity">Ważna do: 03.10.2027</div>
+            </div>
+
+            <!-- Badanie techniczne -->
+            <div class="detail-status-item">
+              <div class="detail-status-head">
+                <span class="status-badge-dot status-err" id="detailInspectionDot">
+                  <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                </span>
+                <span class="detail-status-label" id="detailInspectionLabel">Badanie techniczne</span>
+              </div>
+              <div class="detail-status-validity" id="detailInspectionValidity">Nieważne od: 09.07.2023</div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="detail-divider"></div>
+
+          <!-- Data fields (VIN & Plate) with Kopiuj buttons -->
+          <div class="detail-field-group">
+            <div class="detail-field-label">Numer VIN:</div>
+            <div class="detail-field-row">
+              <div class="detail-field-val" id="detailVinValue">WDD2452081J083498</div>
+              <button class="btn-copy-field" data-copy-target="detailVinValue">Kopiuj</button>
+            </div>
+          </div>
+
+          <div class="detail-field-group">
+            <div class="detail-field-label">Numer rejestracyjny:</div>
+            <div class="detail-field-row">
+              <div class="detail-field-val" id="detailPlateValue">EBE7XC8</div>
+              <button class="btn-copy-field" data-copy-target="detailPlateValue">Kopiuj</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Quick Actions Row -->
+        <div class="vehicle-quick-actions">
+          <div class="quick-action-item" data-action="Historia pojazdu">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="8" rx="2" />
+                <path d="M5 11l2-5h10l2 5" />
+                <circle cx="7.5" cy="15.5" r="1.5" />
+                <circle cx="16.5" cy="15.5" r="1.5" />
+              </svg>
+            </div>
+            <div class="quick-action-label">Historia pojazdu</div>
+          </div>
+
+          <div class="quick-action-item" data-action="mStłuczka">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 14l3-3 3 2 4-5 3 4 3-2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+              </svg>
+            </div>
+            <div class="quick-action-label">mStłuczka</div>
+          </div>
+
+          <div class="quick-action-item" data-action="Punkty karne">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z" />
+                <circle cx="12" cy="11" r="2.5" />
+              </svg>
+            </div>
+            <div class="quick-action-label">Punkty karne</div>
+          </div>
+
+          <div class="quick-action-item" data-action="Mandaty">
+            <div class="quick-action-icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+                <line x1="8" y1="8" x2="16" y2="8" />
+                <line x1="8" y1="12" x2="14" y2="12" />
+                <line x1="8" y1="16" x2="11" y2="16" />
+              </svg>
+            </div>
+            <div class="quick-action-label">Mandaty</div>
+          </div>
+        </div>
+
+        <!-- Ostatnia aktualizacja row with Aktualizuj pill button -->
+        <div class="vehicle-update-row">
+          <div class="update-info-col">
+            <div class="update-info-label">Ostatnia aktualizacja</div>
+            <div class="update-info-date" id="vehicleDetailLastUpdate">13.10.2026</div>
+          </div>
+          <button class="btn-refresh-pill" id="btnRefreshVehicleDetail">
+            Aktualizuj
+          </button>
+        </div>
+
+        <!-- 5 Expandable Accordion Cards -->
+        <div class="vehicle-accordion-list">
+          <!-- 1. Badanie techniczne -->
+          <div class="accordion-item" id="accItemInspection">
+            <div class="accordion-header">
+              <span class="accordion-title">Badanie techniczne</span>
+              <svg class="accordion-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="accordion-content" id="accContentInspection"></div>
+          </div>
+
+          <!-- 2. Polisa OC -->
+          <div class="accordion-item" id="accItemOc">
+            <div class="accordion-header">
+              <span class="accordion-title">Polisa OC</span>
+              <svg class="accordion-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="accordion-content" id="accContentOc"></div>
+          </div>
+
+          <!-- 3. Pozwolenie czasowe -->
+          <div class="accordion-item" id="accItemTemporaryPermit">
+            <div class="accordion-header">
+              <span class="accordion-title">Pozwolenie czasowe</span>
+              <svg class="accordion-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="accordion-content" id="accContentTemporaryPermit"></div>
+          </div>
+
+          <!-- 4. Dowód rejestracyjny -->
+          <div class="accordion-item" id="accItemRegCert">
+            <div class="accordion-header">
+              <span class="accordion-title">Dowód rejestracyjny</span>
+              <svg class="accordion-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="accordion-content" id="accContentRegCert"></div>
+          </div>
+
+          <!-- 5. Dane pojazdu -->
+          <div class="accordion-item" id="accItemVehicleData">
+            <div class="accordion-header">
+              <span class="accordion-title">Dane pojazdu</span>
+              <svg class="accordion-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="accordion-content" id="accContentVehicleData"></div>
+          </div>
+        </div>
+        <div style="height: 24px;"></div>
+      </div>
+    </div>
+
+    <!-- MODAL 1: Document Detail Sheet -->
+    <div class="modal-overlay" id="modalDocDetail">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="modalDocTitle">Dokument</h2>
+          <button class="sheet-close-btn" id="closeDocDetailBtn">✕</button>
+        </div>
+        
+        <!-- Live Time & Authenticity ticker -->
+        <div class="live-time-ticker">
+          <span class="live-dot"></span>
+          <span>CZAS: <span id="liveTimestamp">--:--:--</span> (WAŻNY)</span>
+        </div>
+
+        <!-- Rendered Card Preview inside modal -->
+        <div id="modalDocCardContainer"></div>
+
+        <!-- Document Details Table -->
+        <div id="modalDocFieldsContainer"></div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: Dodaj dokument Sheet -->
+    <div class="modal-overlay" id="modalAddDoc">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title">Dodaj dokument</h2>
+          <button class="sheet-close-btn" id="closeAddDocBtn">✕</button>
+        </div>
+        <div style="margin-bottom: 12px; font-size: 13px; color: var(--text-secondary);">
+          Wybierz dokument do dodania do portfela:
+        </div>
+        
+        <div class="doc-selection-item" data-add="school">
+          <div class="doc-selection-icon" style="background: #2575fc;">🎓</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">mLegitymacja szkolna / studencka</div>
+            <div class="doc-selection-desc">Potwierdzenie statusu ucznia lub studenta</div>
+          </div>
+        </div>
+
+        <div class="doc-selection-item" data-add="family">
+          <div class="doc-selection-icon" style="background: #11998e;">👨‍👩‍👧‍👦</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Karta Dużej Rodziny (KDR)</div>
+            <div class="doc-selection-desc">Zniżki dla rodzin wielodzietnych</div>
+          </div>
+        </div>
+
+        <div class="doc-selection-item" data-add="pensioner">
+          <div class="doc-selection-icon" style="background: #eb3349;">🎖️</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">mLegitymacja emeryta-rencisty</div>
+            <div class="doc-selection-desc">Elektroniczna legitymacja ZUS</div>
+          </div>
+        </div>
+
+        <div class="doc-selection-item" data-add="doctor">
+          <div class="doc-selection-icon" style="background: #38ef7d; color: #111;">🩺</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Prawo wykonywania zawodu</div>
+            <div class="doc-selection-desc">Lekarza, pielęgniarki, radcy prawnego</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: mAsystent (AI Chatbot) -->
+    <div class="modal-overlay" id="modalAssistant">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title">mAsystent</h2>
+          <button class="sheet-close-btn" id="closeAssistantBtn">✕</button>
+        </div>
+        
+        <div class="chat-body" id="chatBody">
+          <div class="chat-bubble chat-bot">
+            Dzień dobry! Jestem Twoim wirtualnym asystentem mObywatel. W czym mogę pomóc?
+          </div>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Napisz pytanie...">
+          <button class="chat-send-btn" id="chatSendBtn">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 4: Powiadomienia -->
+    <div class="modal-overlay" id="modalNotifications">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title">Powiadomienia</h2>
+          <button class="sheet-close-btn" id="closeNotificationsBtn">✕</button>
+        </div>
+        <div class="doc-selection-item">
+          <div class="doc-selection-icon" style="background: #0099ff;">🔔</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">mDowód jest aktualny</div>
+            <div class="doc-selection-desc">Wszystkie certyfikaty są aktywne</div>
+          </div>
+        </div>
+        <div class="doc-selection-item">
+          <div class="doc-selection-icon" style="background: #2e7d32;">🚗</div>
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Badanie techniczne ważne</div>
+            <div class="doc-selection-desc">Kolejny przegląd za 8 miesięcy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 5: Skrzynka e-Doręczenia -->
+    <div class="modal-overlay" id="modalMail">
+      <div class="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+          <h2 class="sheet-title">Skrzynka e-Doręczenia</h2>
+          <button class="sheet-close-btn" id="closeMailBtn">✕</button>
+        </div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+          Oficjalne pisma z urzędów i administracji państwowej
+        </div>
+        <div class="doc-selection-item">
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Urząd Skarbowy</div>
+            <div class="doc-selection-desc">Potwierdzenie rozliczenia deklaracji PIT</div>
+          </div>
+        </div>
+        <div class="doc-selection-item">
+          <div class="doc-selection-info">
+            <div class="doc-selection-name">Wydział Komunikacji</div>
+            <div class="doc-selection-desc">Zawiadomienie o wpisie do CEPiK</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-msg" id="toastMsg"></div>
+
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
