@@ -48,7 +48,9 @@ Aplikacja Progressive Web App (PWA) odwzorowująca 1:1 interfejs i działanie ap
 ## 🚀 Jak uruchomić aplikację lokalnie
 
 ```bash
-node server.js
+npm start
+# lub:
+node dev-server.js
 ```
 
 Aplikacja dostępna pod adresem:

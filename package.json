@@ -3,7 +3,8 @@
   "version": "2.0.0",
   "description": "Aplikacja mObywatel 2.0 PWA 1:1",
   "scripts": {
-    "start": "node server.js"
+    "start": "node dev-server.js",
+    "dev": "node dev-server.js"
   },
   "keywords": [
     "pwa",
