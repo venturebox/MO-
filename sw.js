@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mobywatel-pwa-v6';
+const CACHE_NAME = 'mobywatel-pwa-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
